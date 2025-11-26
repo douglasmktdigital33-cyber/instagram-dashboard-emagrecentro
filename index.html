@@ -1,101 +1,68 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard Premium - Instagram</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Instagram - Emagrecentro</title>
 
-  <!-- estilos -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- bibliotecas -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
+
 <body>
 
-  <!-- Menu Lateral -->
-  <aside class="sidebar">
-    <h2>Emagrecentro</h2>
-    <nav>
-      <ul>
-        <li class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
-        <li><i class="fa-solid fa-bullhorn"></i> Instagram</li>
-        <li><i class="fa-solid fa-database"></i> Dados</li>
-      </ul>
-    </nav>
-  </aside>
+<header>
+    <h1>Dashboard Instagram - Emagrecentro</h1>
+</header>
 
-  <!-- Conteúdo -->
-  <main class="content">
-    <header>
-      <h1>Dashboard Instagram</h1>
-    </header>
+<section class="filters">
+    <label>Filtrar por Unidade:</label>
+    <select id="filter-units"></select>
+    <button id="reload-btn">Atualizar</button>
+</section>
 
-    <section class="filters">
-      <div>
-        <label for="filter-units">Filtrar Unidade:</label>
-        <select id="filter-units"></select>
-      </div>
-      <button id="reload-btn"><i class="fa-solid fa-rotate"></i> Atualizar</button>
-    </section>
+<section class="cards">
+    <div class="card">
+        <h3>Leads Totais</h3>
+        <p id="total-leads">–</p>
+    </div>
 
-    <!-- Cards -->
-    <section class="cards">
-      <div class="card">
-        <i class="fa-solid fa-users"></i>
-        <div>
-          <h3>Leads Totais</h3>
-          <p id="total-leads">–</p>
-        </div>
-      </div>
+    <div class="card">
+        <h3>Directs Recebidos</h3>
+        <p id="total-directs">–</p>
+    </div>
 
-      <div class="card">
-        <i class="fa-solid fa-inbox"></i>
-        <div>
-          <h3>Directs Recebidos</h3>
-          <p id="total-directs">–</p>
-        </div>
-      </div>
+    <div class="card">
+        <h3>Respostas</h3>
+        <p id="total-respostas">–</p>
+    </div>
 
-      <div class="card">
-        <i class="fa-solid fa-reply"></i>
-        <div>
-          <h3>Respostas Direct</h3>
-          <p id="total-respostas">–</p>
-        </div>
-      </div>
+    <div class="card">
+        <h3>Conversão Direct (%)</h3>
+        <p id="conversao-direct">–%</p>
+    </div>
+</section>
 
-      <div class="card">
-        <i class="fa-solid fa-percent"></i>
-        <div>
-          <h3>Conversão Direct</h3>
-          <p id="conversao-direct">–%</p>
-        </div>
-      </div>
-    </section>
+<section class="charts">
 
-    <!-- Gráficos -->
-    <section class="charts-grid">
-      <div class="chart-box">
-        <h3><i class="fa-solid fa-chart-column"></i> Leads por Dia</h3>
+    <div class="chart-box">
+        <h3>Leads por Dia</h3>
         <canvas id="chartLeads"></canvas>
-      </div>
+    </div>
 
-      <div class="chart-box">
-        <h3><i class="fa-solid fa-chart-line"></i> Directs por Dia</h3>
+    <div class="chart-box">
+        <h3>Directs por Dia</h3>
         <canvas id="chartDirects"></canvas>
-      </div>
+    </div>
 
-      <div class="chart-box">
-        <h3><i class="fa-solid fa-bolt"></i> Conversão (%)</h3>
+    <div class="chart-box">
+        <h3>Conversão (%)</h3>
         <canvas id="chartConversao"></canvas>
-      </div>
-    </section>
-  </main>
+    </div>
 
-  <!-- script da app (colocado no fim para garantir que DOM já exista) -->
-  <script src="script.js"></script>
+</section>
+
+<script src="script.js"></script>
 </body>
 </html>
