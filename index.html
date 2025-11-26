@@ -3,48 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Instagram - Emagrecentro (Compact)</title>
-
+    <title>Dashboard Instagram - Emagrecentro</title>
     <link rel="stylesheet" href="style.css">
 
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <!-- PapaParse -->
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
-    <!-- Script principal -->
-    <script src="script.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- PapaParse CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 
 <body>
+    <div class="container">
 
-<header>
-    <h1>Dashboard Instagram - Emagrecentro</h1>
+        <h1 class="title">Dashboard Instagram - Emagrecentro</h1>
 
-    <div class="filter-area">
-        <label for="unidadeSelect">Filtrar Unidade:</label>
-        <select id="unidadeSelect"></select>
-        <button id="btnAtualizar">Atualizar</button>
+        <!-- Filtro -->
+        <div class="filter-box">
+            <label for="unidadeSelect">Filtrar Unidade:</label>
+            <select id="unidadeSelect"></select>
+            <button id="atualizarBtn">Atualizar</button>
+        </div>
+
+        <!-- Cards -->
+        <div class="cards">
+            <div class="card"><h3>Diretos Recebidos</h3><p id="cDiretos">0</p></div>
+            <div class="card"><h3>Respostas</h3><p id="cRespostas">0</p></div>
+            <div class="card"><h3>Agendamentos</h3><p id="cAgendamentos">0</p></div>
+            <div class="card"><h3>Comparecimentos</h3><p id="cComparecimentos">0</p></div>
+            <div class="card"><h3>Vendas</h3><p id="cVendas">0</p></div>
+            <div class="card"><h3>Conversão (%)</h3><p id="cConversao">0%</p></div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="charts">
+            <div class="chart-box">
+                <h3>Respostas por Unidade</h3>
+                <canvas id="chartRespostas"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h3>Agendamentos por Unidade</h3>
+                <canvas id="chartAgendamentos"></canvas>
+            </div>
+        </div>
+
     </div>
-</header>
 
-<section class="cards">
-    <div class="card"><h3>Directs Recebidos</h3><p id="directs">0</p></div>
-    <div class="card"><h3>Respostas</h3><p id="respostas">0</p></div>
-    <div class="card"><h3>Agendamentos</h3><p id="agendamentos">0</p></div>
-    <div class="card"><h3>Comparecimentos</h3><p id="comparecimentos">0</p></div>
-    <div class="card"><h3>Vendas</h3><p id="vendas">0</p></div>
-    <div class="card"><h3>Conversão (%)</h3><p id="conversao">0%</p></div>
-</section>
-
-<section class="charts">
-    <div class="chart-box">
-        <canvas id="chartRespostas"></canvas>
-    </div>
-
-    <div class="chart-box">
-        <canvas id="chartAgendamentos"></canvas>
-    </div>
-</section>
-
+    <script src="script.js" defer></script>
 </body>
 </html>
