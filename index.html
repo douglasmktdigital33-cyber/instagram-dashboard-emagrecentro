@@ -1,0 +1,79 @@
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjDEbxS9ieNObM4lVDYcZ_E9tzuDvf92I8e0VEJCrkByw2r9gHUiUsWWGkE65J97dkiO0Ind8GEoju/pub?gid=308040371&single=true&output=csv";
+
+let chartLeads, chartDirects, chartConversao;
+
+async function loadCSV() {
+    const res = await fetch(SHEET_URL + "&cacheKill=" + Date.now());
+    const text = await res.text();
+    return Papa.parse(text, { header: true }).data;
+}
+
+function preencherUnidades(data) {
+    const select = document.getElementById("filter-units");
+    const unidades = [...new Set(data.map(i => i.UNIDADE))];
+    select.innerHTML = `<option value="">Todas</option>`;
+    unidades.forEach(u => {
+        select.innerHTML += `<option value="${u}">${u}</option>`;
+    });
+}
+
+function filtrar(data) {
+    const unidade = document.getElementById("filter-units").value;
+    return unidade ? data.filter(d => d.UNIDADE === unidade) : data;
+}
+
+function atualizarCards(d) {
+    const leads = d.reduce((a,b)=>a+Number(b.LEADS||0),0);
+    const directs = d.reduce((a,b)=>a+Number(b.DIRECTS||0),0);
+    const respostas = d.reduce((a,b)=>a+Number(b.RESPOSTAS||0),0);
+
+    const conv = directs > 0 ? ((respostas/directs)*100).toFixed(1) : 0;
+
+    document.getElementById("total-leads").innerText = leads;
+    document.getElementById("total-directs").innerText = directs;
+    document.getElementById("total-respostas").innerText = respostas;
+    document.getElementById("conversao-direct").innerText = conv + "%";
+}
+
+function criarGraficos(d) {
+    const dias = d.map(x=>x.DATA);
+    const leads = d.map(x=>Number(x.LEADS||0));
+    const directs = d.map(x=>Number(x.DIRECTS||0));
+    const conv = d.map(x=>{
+        const dr = Number(x.DIRECTS||0);
+        const rs = Number(x.RESPOSTAS||0);
+        return dr>0?((rs/dr)*100).toFixed(1):0;
+    });
+
+    if(chartLeads) chartLeads.destroy();
+    if(chartDirects) chartDirects.destroy();
+    if(chartConversao) chartConversao.destroy();
+
+    chartLeads = new Chart(chartLeadsCanvas, {
+        type: "bar",
+        data: { labels: dias, datasets: [{ label:"Leads", data:leads }] }
+    });
+
+    chartDirects = new Chart(chartDirectsCanvas, {
+        type: "line",
+        data: { labels: dias, datasets: [{ label:"Directs", data:directs }] }
+    });
+
+    chartConversao = new Chart(chartConversaoCanvas, {
+        type: "line",
+        data: { labels: dias, datasets: [{ label:"Conversão %", data:conv }] }
+    });
+}
+
+async function atualizar() {
+    const dados = await loadCSV();
+    preencherUnidades(dados);
+    const filtrado = filtrar(dados);
+    atualizarCards(filtrado);
+    criarGraficos(filtrado);
+}
+
+document.getElementById("filter-units").addEventListener("change", atualizar);
+document.getElementById("reload-btn").addEventListener("click", atualizar);
+
+atualizar();
