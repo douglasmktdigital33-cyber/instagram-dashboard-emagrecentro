@@ -1,110 +1,82 @@
-// script.js (corrigido)
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjDEbxS9ieNObM4lVDYcZ_E9tzuDvf92I8e0VEJCrkByw2r9gHUiUsWWGkE65J97dkiO0Ind8GEoju/pub?gid=308040371&single=true&output=csv";
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Instagram - Emagrecentro</title>
+    <link rel="stylesheet" href="style.css">
 
-let chartLeads = null, chartDirects = null, chartConversao = null;
+    <!-- ChartJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-// canvases (pegamos os elementos assim que o DOM estiver carregado)
-const chartLeadsCanvas = () => document.getElementById('chartLeads');
-const chartDirectsCanvas = () => document.getElementById('chartDirects');
-const chartConversaoCanvas = () => document.getElementById('chartConversao');
+    <!-- PapaParse para CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+</head>
 
-async function loadCSV() {
-  const res = await fetch(SHEET_URL + "&cacheKill=" + Date.now());
-  const text = await res.text();
-  // usa PapaParse (já carregado no HTML)
-  const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
-  return parsed.data;
-}
+<body>
 
-function preencherUnidades(data) {
-  const select = document.getElementById("filter-units");
-  // evitar re-preencher duplicado
-  if (select.options.length > 1) return;
-  const unidades = Array.from(new Set(data.map(i => (i.UNIDADE || i.Unidade || i.unidade || "").trim()).filter(Boolean)));
-  select.innerHTML = `<option value="">Todas</option>`;
-  unidades.forEach(u => select.innerHTML += `<option value="${u}">${u}</option>`);
-}
+    <header>
+        <h1>Dashboard Instagram - Emagrecentro</h1>
+    </header>
 
-function filtrar(data) {
-  const unidade = document.getElementById("filter-units").value;
-  if (!unidade) return data;
-  return data.filter(d => {
-    const valor = (d.UNIDADE || d.Unidade || d.unidade || "").trim();
-    return valor === unidade;
-  });
-}
+    <section id="filtros">
+        <label>Filtrar Unidade:</label>
+        <select id="unidadeFiltro"></select>
 
-function safeNum(v) { return v === undefined || v === null || v === "" ? 0 : Number(String(v).replace(",", ".")); }
+        <button id="atualizar">Atualizar</button>
+    </section>
 
-function atualizarCards(d) {
-  const leads = d.reduce((a,b) => a + safeNum(b.LEADS || b.Leads || b.leads), 0);
-  const directs = d.reduce((a,b) => a + safeNum(b.DIRECTS || b.DirecTS || b.directs), 0);
-  const respostas = d.reduce((a,b) => a + safeNum(b.RESPOSTAS || b.Respostas || b.respostas), 0);
+    <!-- CARDS EM LINHA (3 por linha) -->
+    <section id="cards">
 
-  const conv = directs > 0 ? ((respostas / directs) * 100).toFixed(1) : "0.0";
+        <div class="card">
+            <h3>Leads Totais</h3>
+            <p id="leadsTotal">0</p>
+        </div>
 
-  document.getElementById("total-leads").innerText = leads;
-  document.getElementById("total-directs").innerText = directs;
-  document.getElementById("total-respostas").innerText = respostas;
-  document.getElementById("conversao-direct").innerText = conv + "%";
-}
+        <div class="card">
+            <h3>Directs Recebidos</h3>
+            <p id="directsTotal">0</p>
+        </div>
 
-function criarGraficos(d) {
-  // labels — tenta usar campo DATA ou Dia; se não existir, usa índice
-  const labels = d.map((row, i) => (row.DATA || row.Data || row.data || (`Dia ${i+1}`)));
-  const leads = d.map(r => safeNum(r.LEADS || r.Leads || r.leads));
-  const directs = d.map(r => safeNum(r.DIRECTS || r.Directs || r.directs));
-  const conv = d.map(r => {
-    const dr = safeNum(r.DIRECTS || r.Directs || r.directs);
-    const rs = safeNum(r.RESPOSTAS || r.Respostas || r.respostas);
-    return dr > 0 ? Number(((rs / dr) * 100).toFixed(1)) : 0;
-  });
+        <div class="card">
+            <h3>Respostas</h3>
+            <p id="respostasTotal">0</p>
+        </div>
 
-  // destruir charts existentes
-  if (chartLeads) { chartLeads.destroy(); chartLeads = null; }
-  if (chartDirects) { chartDirects.destroy(); chartDirects = null; }
-  if (chartConversao) { chartConversao.destroy(); chartConversao = null; }
+        <div class="card">
+            <h3>Conversão (%)</h3>
+            <p id="conversaoTotal">0%</p>
+        </div>
 
-  // cria novos
-  chartLeads = new Chart(chartLeadsCanvas(), {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Leads', data: leads }] },
-    options: { maintainAspectRatio: false }
-  });
+        <div class="card">
+            <h3>Conversão Direct (%)</h3>
+            <p id="convDirectTotal">0%</p>
+        </div>
 
-  chartDirects = new Chart(chartDirectsCanvas(), {
-    type: 'line',
-    data: { labels, datasets: [{ label: 'Directs', data: directs, tension: 0.3 }] },
-    options: { maintainAspectRatio: false }
-  });
+        <div class="card">
+            <h3>Comparecimentos</h3>
+            <p id="comparecimentosTotal">0</p>
+        </div>
+    </section>
 
-  chartConversao = new Chart(chartConversaoCanvas(), {
-    type: 'line',
-    data: { labels, datasets: [{ label: 'Conversão %', data: conv, tension: 0.3 }] },
-    options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-  });
-}
+    <!-- GRÁFICOS -->
+    <section id="graficos">
 
-async function atualizar() {
-  try {
-    const dadosBrutos = await loadCSV();
-    preencherUnidades(dadosBrutos);
-    const filtrado = filtrar(dadosBrutos);
-    atualizarCards(filtrado);
-    criarGraficos(filtrado);
-  } catch (err) {
-    console.error("Erro ao atualizar dashboard:", err);
-  }
-}
+        <div class="graficoBox">
+            <canvas id="grafLeads"></canvas>
+        </div>
 
-// eventos
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById("filter-units").addEventListener("change", atualizar);
-  document.getElementById("reload-btn").addEventListener("click", atualizar);
+        <div class="graficoBox">
+            <canvas id="grafDirects"></canvas>
+        </div>
 
-  // primeira carga
-  atualizar();
+        <div class="graficoBox">
+            <canvas id="grafConversao"></canvas>
+        </div>
 
-  // auto refresh a cada 20s
-  setInterval(atualizar, 20_000);
-});
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
