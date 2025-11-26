@@ -1,120 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard Instagram - Emagrecentro (Compact)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Instagram - Emagrecentro (Compact)</title>
 
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
-  <!-- Chart.js (umd) e PapaParse -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" defer></script>
-
-  <!-- main script (defer ensures DOM + libs carregados) -->
-  <script src="script.js" defer></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <!-- PapaParse -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+    <!-- Script principal -->
+    <script src="script.js" defer></script>
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="brand">Dashboard Instagram - Emagrecentro</div>
-    <div class="controls">
-      <label for="unitFilter">Unidade</label>
-      <select id="unitFilter" aria-label="Filtrar unidade"></select>
-      <button id="btnRefresh">Atualizar</button>
+
+<header>
+    <h1>Dashboard Instagram - Emagrecentro</h1>
+
+    <div class="filter-area">
+        <label for="unidadeSelect">Filtrar Unidade:</label>
+        <select id="unidadeSelect"></select>
+        <button id="btnAtualizar">Atualizar</button>
     </div>
-  </header>
+</header>
 
-  <main class="container">
-    <!-- CARDS GERAIS -->
-    <section class="cards cards-overall" aria-label="Totais gerais">
-      <div class="card">
-        <div class="title">Directs (Total)</div>
-        <div class="value" id="total-Directs">0</div>
-      </div>
-      <div class="card">
-        <div class="title">Respostas (Total)</div>
-        <div class="value" id="total-Respostas">0</div>
-      </div>
-      <div class="card">
-        <div class="title">Agendamentos (Total)</div>
-        <div class="value" id="total-Agendamentos">0</div>
-      </div>
+<section class="cards">
+    <div class="card"><h3>Directs Recebidos</h3><p id="directs">0</p></div>
+    <div class="card"><h3>Respostas</h3><p id="respostas">0</p></div>
+    <div class="card"><h3>Agendamentos</h3><p id="agendamentos">0</p></div>
+    <div class="card"><h3>Comparecimentos</h3><p id="comparecimentos">0</p></div>
+    <div class="card"><h3>Vendas</h3><p id="vendas">0</p></div>
+    <div class="card"><h3>Conversão (%)</h3><p id="conversao">0%</p></div>
+</section>
 
-      <div class="card">
-        <div class="title">Comparecimentos (Total)</div>
-        <div class="value" id="total-Comparecimentos">0</div>
-      </div>
-      <div class="card">
-        <div class="title">Vendas (Total)</div>
-        <div class="value" id="total-Vendas">0</div>
-      </div>
-      <div class="card">
-        <div class="title">Conv. Direct (%)</div>
-        <div class="value" id="total-convDirect">0%</div>
-      </div>
-    </section>
+<section class="charts">
+    <div class="chart-box">
+        <canvas id="chartRespostas"></canvas>
+    </div>
 
-    <!-- CARDS UNIDADE -->
-    <section class="cards cards-unit" aria-label="Totais por unidade">
-      <div class="card muted">
-        <div class="title">Directs (Unidade)</div>
-        <div class="value" id="unit-Directs">0</div>
-      </div>
-      <div class="card muted">
-        <div class="title">Respostas (Unidade)</div>
-        <div class="value" id="unit-Respostas">0</div>
-      </div>
-      <div class="card muted">
-        <div class="title">Agendamentos (Unidade)</div>
-        <div class="value" id="unit-Agendamentos">0</div>
-      </div>
+    <div class="chart-box">
+        <canvas id="chartAgendamentos"></canvas>
+    </div>
+</section>
 
-      <div class="card muted">
-        <div class="title">Comparecimentos (Unidade)</div>
-        <div class="value" id="unit-Comparecimentos">0</div>
-      </div>
-      <div class="card muted">
-        <div class="title">Vendas (Unidade)</div>
-        <div class="value" id="unit-Vendas">0</div>
-      </div>
-      <div class="card muted">
-        <div class="title">Conv. Direct (%) Unidade</div>
-        <div class="value" id="unit-convDirect">0%</div>
-      </div>
-    </section>
-
-    <!-- GRÁFICOS compactos -->
-    <section class="grid-charts" aria-label="Gráficos">
-      <div class="chart-small">
-        <div class="chart-title">Directs por Unidade</div>
-        <canvas id="chartDirects" height="200" aria-label="Directs por unidade"></canvas>
-      </div>
-
-      <div class="chart-small">
-        <div class="chart-title">Respostas por Unidade</div>
-        <canvas id="chartRespostas" height="200"></canvas>
-      </div>
-
-      <div class="chart-small">
-        <div class="chart-title">Conv. Direct (%) por Unidade</div>
-        <canvas id="chartConv" height="200"></canvas>
-      </div>
-    </section>
-
-    <!-- TABELA: todas unidades -->
-    <section class="table-section" aria-label="Tabela de unidades">
-      <div class="table-title">Tabela por Unidade</div>
-      <div class="table-wrap">
-        <table id="unitsTable">
-          <thead>
-            <tr><th>Unidade</th><th>Directs</th><th>Respostas</th><th>Agend.</th><th>Comp.</th><th>Vendas</th><th>Conv.Direct %</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">Última atualização automática a cada 30s</footer>
 </body>
 </html>
