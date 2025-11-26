@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Premium - Instagram</title>
+
+  <!-- estilos -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- bibliotecas -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Menu Lateral -->
+  <aside class="sidebar">
+    <h2>Emagrecentro</h2>
+    <nav>
+      <ul>
+        <li class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+        <li><i class="fa-solid fa-bullhorn"></i> Instagram</li>
+        <li><i class="fa-solid fa-database"></i> Dados</li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="content">
+    <header>
+      <h1>Dashboard Instagram</h1>
+    </header>
+
+    <section class="filters">
+      <div>
+        <label for="filter-units">Filtrar Unidade:</label>
+        <select id="filter-units"></select>
+      </div>
+      <button id="reload-btn"><i class="fa-solid fa-rotate"></i> Atualizar</button>
+    </section>
+
+    <!-- Cards -->
+    <section class="cards">
+      <div class="card">
+        <i class="fa-solid fa-users"></i>
+        <div>
+          <h3>Leads Totais</h3>
+          <p id="total-leads">–</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <i class="fa-solid fa-inbox"></i>
+        <div>
+          <h3>Directs Recebidos</h3>
+          <p id="total-directs">–</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <i class="fa-solid fa-reply"></i>
+        <div>
+          <h3>Respostas Direct</h3>
+          <p id="total-respostas">–</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <i class="fa-solid fa-percent"></i>
+        <div>
+          <h3>Conversão Direct</h3>
+          <p id="conversao-direct">–%</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gráficos -->
+    <section class="charts-grid">
+      <div class="chart-box">
+        <h3><i class="fa-solid fa-chart-column"></i> Leads por Dia</h3>
+        <canvas id="chartLeads"></canvas>
+      </div>
+
+      <div class="chart-box">
+        <h3><i class="fa-solid fa-chart-line"></i> Directs por Dia</h3>
+        <canvas id="chartDirects"></canvas>
+      </div>
+
+      <div class="chart-box">
+        <h3><i class="fa-solid fa-bolt"></i> Conversão (%)</h3>
+        <canvas id="chartConversao"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <!-- script da app (colocado no fim para garantir que DOM já exista) -->
+  <script src="script.js"></script>
+</body>
+</html>
