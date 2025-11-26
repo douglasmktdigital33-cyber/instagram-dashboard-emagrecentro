@@ -7,124 +7,65 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Chart.js & PapaParse (CDN) -->
+  <!-- Chart.js & PapaParse -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
   <header class="topbar">
-    <div class="topbar-left">
-      <div class="brand">EMAGRECENTRO — Dashboard Instagram</div>
-      <div class="subtitle">Visão geral operativa</div>
+    <div class="brand-area">
+      <div class="brand">EMAGRECENTRO</div>
+      <div class="brand-sub">Dashboard Instagram — Visão Operacional</div>
     </div>
 
-    <div class="topbar-right">
-      <label for="unitFilter" class="sr-only">Filtrar Unidade</label>
+    <div class="controls">
+      <label for="unitFilter" class="lbl">Filtrar Unidade:</label>
       <select id="unitFilter" aria-label="Filtrar Unidade"></select>
-      <button id="refreshBtn" title="Atualizar dados">🔄 Atualizar</button>
+      <button id="btnRefresh" title="Atualizar dados">🔁 Atualizar</button>
     </div>
   </header>
 
   <main class="main">
-    <!-- KPI GRID (totais gerais) -->
-    <section class="kpi-grid" aria-label="Totais gerais">
-      <div class="kpi card">
-        <div class="kpi-title">Directs (Total)</div>
-        <div class="kpi-value" id="kpi-directs-total">0</div>
-        <div class="kpi-sub" id="kpi-directs-delta"></div>
+
+    <!-- TOP KPIS (muitos cards como no modelo) -->
+    <section class="kpi-row" id="kpiTop">
+      <!-- cards gerados pelo JS -->
+    </section>
+
+    <!-- SECONDARY KPIS (linha abaixo, mesmas dimensões menores) -->
+    <section class="kpi-row small" id="kpiSecond">
+      <!-- cards por unidade / indicadores secundários -->
+    </section>
+
+    <!-- PANELS: gráficos e pequenos widgets -->
+    <section class="panels">
+      <div class="panel left">
+        <div class="panel-title">Directs por Unidade (Top 10)</div>
+        <canvas id="chartDirects" aria-label="Directs por Unidade"></canvas>
       </div>
 
-      <div class="kpi card">
-        <div class="kpi-title">Respostas (Total)</div>
-        <div class="kpi-value" id="kpi-respostas-total">0</div>
-        <div class="kpi-sub" id="kpi-respostas-delta"></div>
-      </div>
-
-      <div class="kpi card">
-        <div class="kpi-title">Agendamentos (Total)</div>
-        <div class="kpi-value" id="kpi-agend-total">0</div>
-        <div class="kpi-sub" id="kpi-agend-delta"></div>
-      </div>
-
-      <div class="kpi card">
-        <div class="kpi-title">Comparecimentos (Total)</div>
-        <div class="kpi-value" id="kpi-comp-total">0</div>
-        <div class="kpi-sub" id="kpi-comp-delta"></div>
-      </div>
-
-      <div class="kpi card">
-        <div class="kpi-title">Vendas (Total)</div>
-        <div class="kpi-value" id="kpi-vendas-total">0</div>
-        <div class="kpi-sub" id="kpi-vendas-delta"></div>
-      </div>
-
-      <div class="kpi card">
-        <div class="kpi-title">Conversão (Respostas ÷ Directs)</div>
-        <div class="kpi-value" id="kpi-conv-total">0%</div>
-        <div class="kpi-sub" id="kpi-conv-delta"></div>
+      <div class="panel right">
+        <div class="panel-title">Respostas por Unidade (Top 10)</div>
+        <canvas id="chartRespostas" aria-label="Respostas por Unidade"></canvas>
       </div>
     </section>
 
-    <!-- KPI GRID (valores por unidade selecionada) -->
-    <section class="kpi-grid small" aria-label="Totais por unidade">
-      <div class="kpi card muted">
-        <div class="kpi-title">Directs (Unidade)</div>
-        <div class="kpi-value" id="kpi-directs-unit">0</div>
-      </div>
-
-      <div class="kpi card muted">
-        <div class="kpi-title">Respostas (Unidade)</div>
-        <div class="kpi-value" id="kpi-respostas-unit">0</div>
-      </div>
-
-      <div class="kpi card muted">
-        <div class="kpi-title">Agendamentos (Unidade)</div>
-        <div class="kpi-value" id="kpi-agend-unit">0</div>
-      </div>
-
-      <div class="kpi card muted">
-        <div class="kpi-title">Comparecimentos (Unidade)</div>
-        <div class="kpi-value" id="kpi-comp-unit">0</div>
-      </div>
-
-      <div class="kpi card muted">
-        <div class="kpi-title">Vendas (Unidade)</div>
-        <div class="kpi-value" id="kpi-vendas-unit">0</div>
-      </div>
-
-      <div class="kpi card muted">
-        <div class="kpi-title">Conv. Direct (%) Unidade</div>
-        <div class="kpi-value" id="kpi-conv-unit">0%</div>
+    <!-- More panels: pie + city bar -->
+    <section class="panels">
+      <div class="panel full">
+        <div class="panel-title">Distribuição de Respostas (por Unidade)</div>
+        <canvas id="chartPie" aria-label="Distribuicao Respostas"></canvas>
       </div>
     </section>
 
-    <!-- Charts: barras + pizza -->
-    <section class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-header">Directs por Unidade (Top 10)</div>
-        <canvas id="chartDirects" aria-label="Directs por unidade"></canvas>
+    <!-- TABLE -->
+    <section class="table-panel">
+      <div class="table-head">
+        <h3>Tabela por Unidade</h3>
+        <p class="note">Ordenado por Directs (desc)</p>
       </div>
-
-      <div class="chart-card">
-        <div class="chart-header">Respostas por Unidade (Top 10)</div>
-        <canvas id="chartRespostas" aria-label="Respostas por unidade"></canvas>
-      </div>
-
-      <div class="chart-card wide">
-        <div class="chart-header">Distribuição (%) de Respostas (Todas Unidades)</div>
-        <canvas id="chartPie" aria-label="Distribuicao respostas"></canvas>
-      </div>
-    </section>
-
-    <!-- Tabela -->
-    <section class="table-card">
-      <div class="table-header">
-        <div class="table-title">Tabela por Unidade</div>
-        <div class="table-note">Ordenado por Directs</div>
-      </div>
-
       <div class="table-wrap">
-        <table id="unitsTable" aria-label="Unidades">
+        <table id="unitsTable" aria-label="Tabela de unidades">
           <thead>
             <tr>
               <th>Unidade</th>
@@ -140,6 +81,7 @@
         </table>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">Dados carregados do Google Sheets — atualização automática a cada 30s</footer>
