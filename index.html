@@ -1,55 +1,149 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Instagram - Emagrecentro</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard Instagram - Emagrecentro (Premium)</title>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 
-    <!-- PapaParse CSV -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- Chart.js & PapaParse (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
-
 <body>
-    <div class="container">
-
-        <h1 class="title">Dashboard Instagram - Emagrecentro</h1>
-
-        <!-- Filtro -->
-        <div class="filter-box">
-            <label for="unidadeSelect">Filtrar Unidade:</label>
-            <select id="unidadeSelect"></select>
-            <button id="atualizarBtn">Atualizar</button>
-        </div>
-
-        <!-- Cards -->
-        <div class="cards">
-            <div class="card"><h3>Diretos Recebidos</h3><p id="cDiretos">0</p></div>
-            <div class="card"><h3>Respostas</h3><p id="cRespostas">0</p></div>
-            <div class="card"><h3>Agendamentos</h3><p id="cAgendamentos">0</p></div>
-            <div class="card"><h3>Comparecimentos</h3><p id="cComparecimentos">0</p></div>
-            <div class="card"><h3>Vendas</h3><p id="cVendas">0</p></div>
-            <div class="card"><h3>Conversão (%)</h3><p id="cConversao">0%</p></div>
-        </div>
-
-        <!-- Gráficos -->
-        <div class="charts">
-            <div class="chart-box">
-                <h3>Respostas por Unidade</h3>
-                <canvas id="chartRespostas"></canvas>
-            </div>
-
-            <div class="chart-box">
-                <h3>Agendamentos por Unidade</h3>
-                <canvas id="chartAgendamentos"></canvas>
-            </div>
-        </div>
-
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand">EMAGRECENTRO — Dashboard Instagram</div>
+      <div class="subtitle">Visão geral operativa</div>
     </div>
 
-    <script src="script.js" defer></script>
+    <div class="topbar-right">
+      <label for="unitFilter" class="sr-only">Filtrar Unidade</label>
+      <select id="unitFilter" aria-label="Filtrar Unidade"></select>
+      <button id="refreshBtn" title="Atualizar dados">🔄 Atualizar</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- KPI GRID (totais gerais) -->
+    <section class="kpi-grid" aria-label="Totais gerais">
+      <div class="kpi card">
+        <div class="kpi-title">Directs (Total)</div>
+        <div class="kpi-value" id="kpi-directs-total">0</div>
+        <div class="kpi-sub" id="kpi-directs-delta"></div>
+      </div>
+
+      <div class="kpi card">
+        <div class="kpi-title">Respostas (Total)</div>
+        <div class="kpi-value" id="kpi-respostas-total">0</div>
+        <div class="kpi-sub" id="kpi-respostas-delta"></div>
+      </div>
+
+      <div class="kpi card">
+        <div class="kpi-title">Agendamentos (Total)</div>
+        <div class="kpi-value" id="kpi-agend-total">0</div>
+        <div class="kpi-sub" id="kpi-agend-delta"></div>
+      </div>
+
+      <div class="kpi card">
+        <div class="kpi-title">Comparecimentos (Total)</div>
+        <div class="kpi-value" id="kpi-comp-total">0</div>
+        <div class="kpi-sub" id="kpi-comp-delta"></div>
+      </div>
+
+      <div class="kpi card">
+        <div class="kpi-title">Vendas (Total)</div>
+        <div class="kpi-value" id="kpi-vendas-total">0</div>
+        <div class="kpi-sub" id="kpi-vendas-delta"></div>
+      </div>
+
+      <div class="kpi card">
+        <div class="kpi-title">Conversão (Respostas ÷ Directs)</div>
+        <div class="kpi-value" id="kpi-conv-total">0%</div>
+        <div class="kpi-sub" id="kpi-conv-delta"></div>
+      </div>
+    </section>
+
+    <!-- KPI GRID (valores por unidade selecionada) -->
+    <section class="kpi-grid small" aria-label="Totais por unidade">
+      <div class="kpi card muted">
+        <div class="kpi-title">Directs (Unidade)</div>
+        <div class="kpi-value" id="kpi-directs-unit">0</div>
+      </div>
+
+      <div class="kpi card muted">
+        <div class="kpi-title">Respostas (Unidade)</div>
+        <div class="kpi-value" id="kpi-respostas-unit">0</div>
+      </div>
+
+      <div class="kpi card muted">
+        <div class="kpi-title">Agendamentos (Unidade)</div>
+        <div class="kpi-value" id="kpi-agend-unit">0</div>
+      </div>
+
+      <div class="kpi card muted">
+        <div class="kpi-title">Comparecimentos (Unidade)</div>
+        <div class="kpi-value" id="kpi-comp-unit">0</div>
+      </div>
+
+      <div class="kpi card muted">
+        <div class="kpi-title">Vendas (Unidade)</div>
+        <div class="kpi-value" id="kpi-vendas-unit">0</div>
+      </div>
+
+      <div class="kpi card muted">
+        <div class="kpi-title">Conv. Direct (%) Unidade</div>
+        <div class="kpi-value" id="kpi-conv-unit">0%</div>
+      </div>
+    </section>
+
+    <!-- Charts: barras + pizza -->
+    <section class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">Directs por Unidade (Top 10)</div>
+        <canvas id="chartDirects" aria-label="Directs por unidade"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">Respostas por Unidade (Top 10)</div>
+        <canvas id="chartRespostas" aria-label="Respostas por unidade"></canvas>
+      </div>
+
+      <div class="chart-card wide">
+        <div class="chart-header">Distribuição (%) de Respostas (Todas Unidades)</div>
+        <canvas id="chartPie" aria-label="Distribuicao respostas"></canvas>
+      </div>
+    </section>
+
+    <!-- Tabela -->
+    <section class="table-card">
+      <div class="table-header">
+        <div class="table-title">Tabela por Unidade</div>
+        <div class="table-note">Ordenado por Directs</div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="unitsTable" aria-label="Unidades">
+          <thead>
+            <tr>
+              <th>Unidade</th>
+              <th>Directs</th>
+              <th>Respostas</th>
+              <th>Agendamentos</th>
+              <th>Comparecimentos</th>
+              <th>Vendas</th>
+              <th>Conv. Direct %</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">Dados carregados do Google Sheets — atualização automática a cada 30s</footer>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
