@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Instagram - Dezembro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Arial", sans-serif;
+        background: #0f172a; /* azul escuro */
+        color: #f1f5f9;
+    }
+
+    header {
+        background: #1e293b;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        color: #38bdf8;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    /* Filtros */
+    .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    select, button {
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: none;
+        background: #334155;
+        color: white;
+        cursor: pointer;
+    }
+
+    button {
+        background: #38bdf8;
+        color: #0f172a;
+        font-weight: bold;
+    }
+
+    /* KPIs */
+    .kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .card {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 18px;
+        border-left: 4px solid #38bdf8;
+        box-shadow: 0 0 10px rgba(56,189,248,0.2);
+    }
+
+    /* Tabela */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+        background: #1e293b;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    th {
+        background: #334155;
+        padding: 12px;
+        color: #38bdf8;
+    }
+
+    td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #334155;
+    }
+
+    /* Gráficos */
+    .charts {
+        margin-top: 40px;
+        display: grid;
+        gap: 25px;
+    }
+
+    canvas {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(56,189,248,0.2);
+    }
+
+    /* Responsivo celular */
+    @media (max-width: 600px) {
+        header { font-size: 20px; }
+        .card { font-size: 16px; }
+    }
+
+</style>
+</head>
+<body>
+
+<header>📊 Dashboard Instagram – Dezembro</header>
+
+<div class="container">
+
+    <div class="filters">
+        <select id="unitFilter"></select>
+        <button onclick="loadData()">Atualizar</button>
+    </div>
+
+    <div class="kpis">
+        <div class="card" id="kpiDirects"></div>
+        <div class="card" id="kpiRespostas"></div>
+        <div="card" id="kpiAgendamentos"></div>
+        <div class="card" id="kpiComparecimentos"></div>
+        <div class="card" id="kpiVendas"></div>
+        <div class="card" id="kpiConversao"></div>
+    </div>
+
+    <h2 style="margin-top:30px;">Resumo por Unidade</h2>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Unidade</th>
+                <th>Directs</th>
+                <th>Respostas</th>
+                <th>Agendamentos</th>
+                <th>Comparecimentos</th>
+                <th>Vendas</th>
+                <th>Conversão (%)</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="charts">
+        <canvas id="directsChart"></canvas>
+        <canvas id="respostasChart"></canvas>
+        <canvas id="agendamentosChart"></canvas>
+        <canvas id="funilChart"></canvas>
+    </div>
+
+</div>
+
+<script>
+
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjDEbxS9ieNObM4lVDYcZ_E9tzuDvf92I8e0VEJCrkByw2r9gHUiUsWWGkE65J97dkiO0Ind8GEoju/pub?gid=308040371&single=true&output=csv";
+
+let rawData = [];
+let charts = [];
+
+async function loadData() {
+    const response = await fetch(CSV_URL + "&t=" + Date.now());
+    const csv = await response.text();
+    const rows = csv.split("\n").map(l => l.split(","));
+
+    rawData = rows.slice(1).filter(r => r[0]).map(r => ({
+        unidade: r[0],
+        directs: Number(r[1]),
+        respostas: Number(r[2]),
+        agendamentos: Number(r[3]),
+        comparecimentos: Number(r[4]),
+        vendas: Number(r[5])
+    }));
+
+    updateUnitFilter();
+    updateDashboard();
+    updateCharts();
+}
+
+function updateUnitFilter() {
+    const select = document.getElementById("unitFilter");
+    if (select.options.length > 0) return;
+
+    select.innerHTML = `<option value="TODAS">Todas Unidades</option>`;
+    rawData.forEach(r => {
+        select.innerHTML += `<option value="${r.unidade}">${r.unidade}</option>`;
+    });
+}
+
+function updateDashboard() {
+    const sel = document.getElementById("unitFilter").value;
+    const data = sel === "TODAS" ? rawData : rawData.filter(r => r.unidade === sel);
+
+    const tot = {
+        directs: data.reduce((a,b)=>a+b.directs,0),
+        respostas: data.reduce((a,b)=>a+b.respostas,0),
+        agendamentos: data.reduce((a,b)=>a+b.agendamentos,0),
+        comparecimentos: data.reduce((a,b)=>a+b.comparecimentos,0),
+        vendas: data.reduce((a,b)=>a+b.vendas,0)
+    };
+
+    document.getElementById("kpiDirects").innerHTML = "Directs<br>" + tot.directs;
+    document.getElementById("kpiRespostas").innerHTML = "Respostas<br>" + tot.respostas;
+    document.getElementById("kpiAgendamentos").innerHTML = "Agendamentos<br>" + tot.agendamentos;
+    document.getElementById("kpiComparecimentos").innerHTML = "Comparecimentos<br>" + tot.comparecimentos;
+    document.getElementById("kpiVendas").innerHTML = "Vendas<br>" + tot.vendas;
+    document.getElementById("kpiConversao").innerHTML =
+        "Conversão Final<br>" + (tot.directs > 0 ? ((tot.vendas / tot.directs)*100).toFixed(1) : 0) + "%";
+
+    const tbody = document.querySelector("#resultTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(r => {
+        const conv = r.directs > 0 ? ((r.vendas / r.directs) * 100).toFixed(1) : 0;
+        tbody.innerHTML += `
+            <tr>
+                <td>${r.unidade}</td>
+                <td>${r.directs}</td>
+                <td>${r.respostas}</td>
+                <td>${r.agendamentos}</td>
+                <td>${r.comparecimentos}</td>
+                <td>${r.vendas}</td>
+                <td>${conv}%</td>
+            </tr>`;
+    });
+}
+
+function updateCharts() {
+    charts.forEach(c => c.destroy());
+    charts = [];
+
+    const labels = rawData.map(r => r.unidade);
+
+    charts.push(new Chart(directsChart, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Directs", data: rawData.map(r=>r.directs), backgroundColor: "#38bdf8" }] }
+    }));
+
+    charts.push(new Chart(respostasChart, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Respostas", data: rawData.map(r=>r.respostas), backgroundColor: "#4ade80" }] }
+    }));
+
+    charts.push(new Chart(agendamentosChart, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Agendamentos", data: rawData.map(r=>r.agendamentos), backgroundColor: "#facc15" }] }
+    }));
+
+    charts.push(new Chart(funilChart, {
+        type: "line",
+        data: {
+            labels: ["Directs","Respostas","Agendamentos","Comparecimentos","Vendas"],
+            datasets: [{
+                label: "Funil de Conversão",
+                data: [
+                    rawData.reduce((a,b)=>a+b.directs,0),
+                    rawData.reduce((a,b)=>a+b.respostas,0),
+                    rawData.reduce((a,b)=>a+b.agendamentos,0),
+                    rawData.reduce((a,b)=>a+b.comparecimentos,0),
+                    rawData.reduce((a,b)=>a+b.vendas,0)
+                ],
+                borderColor: "#38bdf8",
+                borderWidth: 3
+            }]
+        }
+    }));
+}
+
+setInterval(loadData, 15000);
+
+loadData();
+
+</script>
+</body>
+</html>
