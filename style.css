@@ -1,80 +1,103 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0b1220;
-    color: white;
+/* style.css - tema premium inspirado no modelo solicitado */
+
+/* cores */
+:root{
+  --bg:#0b1220;
+  --panel:#0f2332;
+  --muted:#122a3c;
+  --accent:#00b7c9;
+  --accent-2:#18e6b4;
+  --text:#e7f6fb;
+  --muted-text:rgba(231,246,251,0.7);
+  --card-radius:12px;
 }
 
-.container {
-    max-width: 1450px;
-    margin: auto;
-    padding: 20px;
+/* base */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background:linear-gradient(180deg,#081026 0%, #071623 100%);
+  color:var(--text);
 }
-
-.title {
-    font-size: 32px;
-    margin-bottom: 20px;
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding:18px 28px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
 }
+.topbar .brand{font-weight:800; font-size:20px; color:var(--accent)}
+.topbar .subtitle{font-size:13px; color:var(--muted-text); margin-top:4px}
 
-.filter-box {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 25px;
+/* controls */
+.topbar-right{display:flex; gap:10px; align-items:center}
+select, button{
+  background:#0c2738; color:var(--text); border:1px solid rgba(255,255,255,0.03);
+  padding:8px 10px; border-radius:8px; font-size:14px;
 }
+button{background:linear-gradient(180deg,var(--accent), #0095a0); color:#022424; font-weight:700; cursor:pointer}
 
-select, button {
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 15px;
-    border: none;
+/* main */
+.main{max-width:1320px; margin:20px auto; padding:0 18px 28px}
+
+/* KPI grid - principais */
+.kpi-grid{
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap:14px;
+  margin-bottom:14px;
 }
+.kpi-grid.small{margin-bottom:22px; grid-template-columns: repeat(6, 1fr);}
 
-button {
-    background: #1473e6;
-    color: white;
-    cursor: pointer;
+.card, .kpi{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:16px;
+  border-radius:var(--card-radius);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45);
 }
+.kpi{display:flex; flex-direction:column; align-items:flex-start; gap:6px}
+.kpi .kpi-title{font-size:13px; color:var(--muted-text); font-weight:700}
+.kpi .kpi-value{font-size:22px; font-weight:800; margin-top:4px}
+.kpi .kpi-sub{font-size:12px; color:rgba(255,255,255,0.6)}
 
-button:hover {
-    background: #0e5fb7;
+/* muted small KPIs (unit) */
+.card.muted{background:linear-gradient(180deg,#0b2130,#071827)}
+
+/* charts */
+.charts-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:16px;
+  margin-bottom:16px;
 }
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 15px;
-    margin-bottom: 30px;
+.chart-card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:14px; border-radius:12px; min-height:220px;
 }
+.chart-card.wide{grid-column:1 / -1}
 
-.card {
-    background: #121b2e;
-    padding: 18px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 4px 15px #0004;
+/* table */
+.table-card{margin-top:6px}
+.table-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+.table-title{font-weight:700; color:var(--accent)}
+.table-wrap{background:#071827; border-radius:12px; padding:8px; box-shadow:0 8px 16px rgba(0,0,0,0.4)}
+table{width:100%; border-collapse:collapse; color:var(--text); font-size:13px}
+th, td{padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.03); text-align:left}
+th{color:var(--accent); font-weight:700}
+tbody tr:hover{background: rgba(255,255,255,0.02)}
+
+/* footer */
+.footer{max-width:1320px;margin:18px auto;padding:10px;color:rgba(255,255,255,0.5);font-size:13px;text-align:center}
+
+/* responsive */
+@media (max-width:1200px){
+  .kpi-grid, .kpi-grid.small{grid-template-columns: repeat(3, 1fr)}
+  .charts-grid{grid-template-columns:1fr}
 }
-
-.card h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: #8fa3c9;
-}
-
-.card p {
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.charts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-.chart-box {
-    background: #121b2e;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px #0004;
+@media (max-width:720px){
+  .topbar{flex-direction:column; align-items:flex-start; gap:10px; padding:14px}
+  .kpi-grid, .kpi-grid.small{grid-template-columns:repeat(2,1fr)}
+  .charts-grid{grid-template-columns:1fr}
+  .kpi .kpi-value{font-size:18px}
 }
